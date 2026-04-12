@@ -233,7 +233,7 @@ bool PidROS::initialize_from_args(
 {
   Pid::Gains verify_gains(p, i, d, u_max, u_min, antiwindup_strat);
   std::string error_msg = "";
-  if (!verify_gains.validate(error_msg))
+  if (!verify_gains.validate())
   {
     RCLCPP_ERROR(
       node_logging_->get_logger(), "Received invalid gains: %s. Skipping new gains.",
@@ -324,7 +324,7 @@ bool PidROS::set_gains(
 bool PidROS::set_gains(const Pid::Gains & gains)
 {
   std::string error_msg = "";
-  if (!gains.validate(error_msg))
+  if (!gains.validate())
   {
     RCLCPP_ERROR(
       node_logging_->get_logger(), "Received invalid gains: %s. Skipping new gains.",

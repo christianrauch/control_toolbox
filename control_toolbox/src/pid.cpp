@@ -128,27 +128,18 @@ bool Pid::set_gains(
   double p, double i, double d, double u_max, double u_min,
   const AntiWindupStrategy & antiwindup_strat)
 {
-  try
+  Gains gains(p, i, d, u_max, u_min, antiwindup_strat);
+  if (set_gains(gains))
   {
-    Gains gains(p, i, d, u_max, u_min, antiwindup_strat);
-    if (set_gains(gains))
-    {
-      return true;
-    }
-  }
-  catch (const std::exception & e)
-  {
-    std::cerr << e.what() << '\n';
+    return true;
   }
   return false;
 }
 
 bool Pid::set_gains(const Gains & gains_in)
 {
-  std::string error_msg = "";
-  if (!gains_in.validate(error_msg))
+  if (!gains_in.validate())
   {
-    std::cerr << "PID: Invalid gains: " << error_msg << ". Skipping new gains." << std::endl;
     return false;
   }
   else
@@ -194,7 +185,6 @@ double Pid::compute_command(double error, const double & dt_s)
   // don't reset controller but return NaN
   if (!std::isfinite(error))
   {
-    std::cerr << "Received a non-finite error value\n";
     return cmd_ = std::numeric_limits<float>::quiet_NaN();
   }
 
@@ -260,7 +250,6 @@ double Pid::compute_command(double error, double error_dot, const double & dt_s)
   // Don't reset controller but return NaN
   if (!std::isfinite(error) || !std::isfinite(error_dot))
   {
-    std::cerr << "Received a non-finite error/error_dot value\n";
     return cmd_ = std::numeric_limits<double>::quiet_NaN();
   }
 

@@ -293,27 +293,20 @@ public:
     {
     }
 
-    bool validate(std::string & error_msg) const
+    bool validate() const
     {
       if (u_min_ >= u_max_)  // is false if any value is nan
       {
-        error_msg = fmt::format("Gains: u_min ({}) must be less than u_max ({})", u_min_, u_max_);
+        throw std::invalid_argument(
+          fmt::format("Gains: u_min ({}) must be less than u_max ({})", u_min_, u_max_));
         return false;
       }
       else if (std::isnan(u_min_) || std::isnan(u_max_))
       {
-        error_msg = "Gains: u_min and u_max must not be NaN";
+        throw std::invalid_argument("Gains: u_min and u_max must not be NaN");
         return false;
       }
-      try
-      {
-        antiwindup_strat_.validate();
-      }
-      catch (const std::exception & e)
-      {
-        error_msg = e.what();
-        return false;
-      }
+      antiwindup_strat_.validate();
       return true;
     }
 
